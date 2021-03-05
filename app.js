@@ -7,14 +7,15 @@ const jsonParser = bodyParser.json()//json parser
 const urlencodedParser = bodyParser.urlencoded({extended: false})//form parser  
 const port = 17002
 
+
 app.get('/',(req,res)=>{
 	var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress
 	console.log(Date())
-	console.log("IP from : %d",ip)
+	console.log("IP from : %s",ip)
 	console.log("mainscreen")
 	console.log()
 
-	fs.readFile("/static/main/index.html",(err,data)=>{
+	fs.readFile("static/main/index.html",(err,data)=>{
 		if(err) throw err
 		res.send(data.toString())
 	})
@@ -31,15 +32,22 @@ app.post('/auth',urlencodedParser,(req,res) => {
 })
 
 app.all('/login',urlencodedParser,(req,res)=>{
-	if(!res){
+	var auth = req.body.auth
+	console.log(auth)
+	if(auth){
+		var email = req.body.email
+		var passwd = req.body.pass
 		//send get request
-		fs.readFile("/templates/login/index.html",(err,data)=>{
+		console.log("Logged in")
+		console.log("Email: %s. passwd: %s",email,passwd)
+		res.sendStatus(200)
+	}else{
+		//send get request
+		console.log("printing login page")
+		fs.readFile("static/login/index.html",(err,data)=>{
 			if(err) throw err;
 			res.send(data.toString())
 		})
-	}else{
-		//send POST request
-
 	}
 })
 

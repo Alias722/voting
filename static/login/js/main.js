@@ -6,7 +6,7 @@
     /*==================================================================
     [ Validate ]*/
     var input = $('.validate-input .input100');
-
+    $('#Iwanttohide').hide()
     $('.validate-form').on('submit',function(){
         var check = true;
 
