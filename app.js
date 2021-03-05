@@ -1,19 +1,25 @@
 const express = require("express")
 const app = express()
+const fs = require("fs")
 
 const bodyParser = require("body-parser")
 const jsonParser = bodyParser.json()//json parser                                                                                                           
 const urlencodedParser = bodyParser.urlencoded({extended: false})//form parser  
 const port = 17002
 
-app.all('/',(req,res)=>{
+app.get('/',(req,res)=>{
 	var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress
 	console.log(Date())
 	console.log("IP from : %d",ip)
-})
+	console.log("mainscreen")
+	console.log()
 
-app.get('/',(req,res)=>{
-	res.send("hello world")
+	fs.readFile("/static/main/index.html",(err,data)=>{
+		if(err) throw err
+		res.send(data.toString())
+	})
+	
+
 })
 app.post('/auth',urlencodedParser,(req,res) => {
 	if(!req.body) return res.sendStatus(404)        
@@ -22,6 +28,19 @@ app.post('/auth',urlencodedParser,(req,res) => {
 	console.log(req.body.name)
 	console.log(req.body.age)
 	res.send(tosend.toString)
+})
+
+app.all('/login',urlencodedParser,(req,res)=>{
+	if(!res){
+		//send get request
+		fs.readFile("/templates/login/index.html",(err,data)=>{
+			if(err) throw err;
+			res.send(data.toString())
+		})
+	}else{
+		//send POST request
+
+	}
 })
 
 app.listen(port,()=>{
