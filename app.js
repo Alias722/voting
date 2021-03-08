@@ -17,6 +17,9 @@ const urlencodedParser = bodyParser.urlencoded({extended: false})//form parser
 const mysql = require("mysql")
 const port = 17002 // this node.js is working on this port using nginx proxy to outside
 
+//init
+
+
 //every request will all pass here
 //app.use(cookieParser(cookieParserName),(req,res)
 var temp
@@ -45,6 +48,8 @@ app.use(cookieParser(cookieParserName),(req,res,next)=>{
 			//cookie session not correct
 			res.clearCookie('id',{signed: true,httpOnly: true,overwrite: true})
 			console.log("cookie deleted")
+			//reload page
+			return res.redirect('back')
 			return next()
 		}
 		email = result[0].email
@@ -54,13 +59,14 @@ app.use(cookieParser(cookieParserName),(req,res,next)=>{
 			res.clearCookie('id',{signed: true,httpOnly: true,overwrite: true})
 			conn.query('delete from session where id = "'+mysql.escape(sessionid)+'";')
 			console.log("cookie expired deleted")
+			return res.redirect('back')
 			return next()
 		}else{
 			//update session
 			var timenow = Date.now()
 			temp = 'update session set time = '+ timenow + ' where id = "'+mysql.escape(sessionid)+'";'
 			conn.query(temp)
-			res.cookie('id', sessionid, {signed: true, maxAge:1800000,httpOnly: true,overwrite: true});
+			res.cookie('id', sessionid, {signed: true,httpOnly: true,overwrite: true});
 			console.log("session time update")
 			return next()
 		}
@@ -82,13 +88,7 @@ conn.connect((err)=>{
 	console.log("connection success!!")
 })
 conn.query("use tnfsavoting")
-
-app.get("/rand",(req,res)=>{
-	var rand = crypto.randomBytes(16).toString('base64')
-	res.send(rand)
-})
-
-
+conn.query("delete from session")
 app.get('/',(req,res)=>{
 	//main page
 	console.log("mainscreen")
@@ -167,7 +167,6 @@ app.all('/login',urlencodedParser,(req,res)=>{
 	//the login in app
 	//with the parameter "auth" can lead to different page
 	var sessionid = req.signedCookies.id
-			
 	if(!sessionid){
 		//session not exsist
 		//print login page
@@ -211,11 +210,11 @@ app.all('/login',urlencodedParser,(req,res)=>{
 					var timenow = Date.now()
 					var sqlquery = 'insert into session (id,time,email) values ("'+mysql.escape(sessionid)+'",'+timenow+',"'+mysql.escape(email)+'");'
 					conn.query(sqlquery)
-					res.cookie('id', sessionid, {signed: true, maxAge:1800000,httpOnly: true,overwrite: true});
+					res.cookie('id', sessionid, {signed: true,httpOnly: true,overwrite: true})
+					return res.redirect(302,"https://voting.sivir.pw/login")
 					//reload page
 					console.log("here")
 					//return res.send('<script>location.replace("https://voting.sivir.pw/login")</script>')
-					return res.redirect(302,"https://voting.sivir.pw/login")
 				}else{
 					//password is not match with mysql database
 				}
@@ -223,44 +222,8 @@ app.all('/login',urlencodedParser,(req,res)=>{
 		})
 	}
 	
-
-				/*}else{
-					sqlpassword = result[0].password
-					if(sqlpassword == mysql.escape(passwd)){
-						console.log("correct")
-						console.log()
-				
-						//establishing session
-       	 				var sessionid = crypto.randomBytes(16).toString('base64')
-						var timenow = Date.now()
-						//put session id and date into mysql server
-						var sqlquery = 'insert into session (id,time,email) values ("'+mysql.escape(sessionid)+'",'+timenow+',"'+mysql.escape(email)+'");'
-						console.log(sqlquery)
-						conn.query(sqlquery)
-						//add cookie file in client
-						res.cookie('id', sessionid, {signed: true, maxAge:1800000,httpOnly: true,overwrite: true});
-						return res.sendStatus(200)
-					}else{
-						console.log("password not match")
-						console.log()
-						return res.send("<script>alert('INVALIDE username or password');location.replace('https://voting.sivir.pw/login')</script>")
-					}
-				}
-	
-			})
-		}else{
-			//send login website page
-			console.log("printing login page")
-			console.log()
-			fs.readFile("static/login/index",(err,data)=>{
-				if(err) throw err;
-				return res.send(data.toString())
-			})
-		}
-	}else{
-		return res.send("<script>location.replace('https://voting.sivir.pw/function')</script>")
-	}*/
 })
+/*
 app.get("/function",(req,res)=>{
 	//check session id
 	var sessionid = req.signedCookies.id
@@ -282,7 +245,7 @@ app.get("/function",(req,res)=>{
 		})
 	}
 
-})
+})*/
 /*conn.end((err)=>{
 	if(err) throw err;
 	console.log("connection ended")
