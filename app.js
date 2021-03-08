@@ -2,7 +2,7 @@
 const register = true
 const cookieParserName = "HelloWorldhaha"
 
-const websiteURL = "http://localhost"
+const websiteURL = "http://localhost/"
 
 //import files
 
@@ -49,7 +49,8 @@ app.use(cookieParser(cookieParserName), (req, res, next) => {
             res.cookie('id', sessionid, {maxAge: 0, signed: true, httpOnly: true, overwrite: true});
             console.log("cookie deleted")
             //reload page
-            return next()
+            return res.redirect(301,websiteURL)
+            //return next()
         }
         email = result[0].email
         var time = result[0].time
@@ -58,7 +59,8 @@ app.use(cookieParser(cookieParserName), (req, res, next) => {
             res.cookie('id', sessionid, {maxAge: 0, signed: true, httpOnly: true, overwrite: true});
             conn.query('delete from session where id = "' + mysql.escape(sessionid) + '";')
             console.log("cookie expired deleted")
-            return next()
+            return res.redirect(301,websiteURL)
+            //return next()
         } else {
             //update session
             var timenow = Date.now()
@@ -110,9 +112,9 @@ app.all('/adduser', urlencodedParser, (req, res) => {
             var sql = 'insert into logininfo (email,username,password) values ("' + mysql.escape(email) + '","' + mysql.escape(username) + '","' + mysql.escape(passwd) + '");'
             console.log(sql)
             conn.query(sql)
-            return res.send("<script>alert('account created redirecting to login page');location.replace('" + websiteURL + "/login')</script>")
+            return res.send("<script>alert('account created redirecting to login page');location.replace('" + websiteURL + "login')</script>")
         } else {
-            return res.send("<script>alert('function not enabled');location.replace('" + websiteURL + "/')</script>")
+            return res.send("<script>alert('function not enabled');location.replace('" + websiteURL + "')</script>")
         }
     } else {
         //print add user page
@@ -129,7 +131,7 @@ app.all('/login', urlencodedParser, (req, res) => {
     //the login in app
     //with the parameter "auth" can lead to different page
 
-    var sessionid = req.signedCookies.id
+    const sessionid = req.signedCookies.id;
     if(!sessionid){
         //session not exist
         var auth = req.body.auth
@@ -154,7 +156,7 @@ app.all('/login', urlencodedParser, (req, res) => {
                     //username not queried
                     console.log("username not match")
                     flag = true
-                    return res.send('<script>alert("INVALID username or password");location.replace("' + websiteURL + '/login")</script>')
+                    return res.send('<script>alert("INVALID username or password");location.replace("' + websiteURL + 'login")</script>')
                 } else {
                     //account exist , verify the password
                     var sqlpassword = result[0].password
@@ -170,60 +172,46 @@ app.all('/login', urlencodedParser, (req, res) => {
                         res.cookie('id', sessionid, {signed: true, httpOnly: true, overwrite: true})
 
                         //reload page
-                        flag = true
-                        return res.redirect(302, websiteURL + "/login")
+                        return res.redirect(302, websiteURL + "login")
                     } else {
                         //password is not match with mysql database
-                        return res.redirect(302, websiteURL + "/login")
+                        return res.redirect(302, websiteURL + "login")
                     }
                 }
             })
         }
     }else{
         //logged in
-            res.send("Function Page")
+        fs.readFile("static/handwrite/function/index.html", (err, data) => {
+            if (err) throw err
+            return res.send(data.toString())
+        })
+        //res.send("Function Page")
     }
-    /*
-
-
-            })
-        }
-        if(flag)return
-
-    } else {
-        //having session id but not triggered with auth parameter
-        //if verified enter function page
-        //directly print function page
-
-        //print function page
-        return res.send("Function Page")
-    }*/
-    //session exist
-
 })
-/*
-app.get("/function",(req,res)=>{
-	//check session id
-	var sessionid = req.signedCookies.id
-	//check sessionid validate
-	if(!sessionid){
-		//no session id
-		return res.send("<script>alert('permission deny');location.replace('https://voting.sivir.pw/login')</script>")
-	}else{
-		//have session id
-		var temp = 'select * from session where id = "'+mysql.escape(sessionid)+'";'
-		conn.query(temp,(err,result,fields)=>{
-			console.log(result)
-			if(result.length == 0){
-				//not valid
-				//res.cookie('id', sessionid, {signed: true, maxAge:0,httpOnly: true,overwrite: true});
-				console.log("Hello")
-				//tobe continued
-			}
-		})
-	}
 
-})*/
+app.all('/auth', urlencodedParser,(req,res)=>{
+    const sessionid = req.signedCookies.id
+
+    if(!sessionid){
+        //no session id
+        res.redirect(301,websiteURL+'login')
+    }else{
+        var stu = req.body.stu
+        if(!stu){
+            //no student post request
+            //print the page to insert student number
+            fs.readFile("static/handwrite/stu/index.html", (err, data) => {
+                if (err) throw err
+                return res.send(data.toString())
+            })
+        }else{
+            //receive stu post request
+            res.send("handling")
+        }
+    }
+    //res.sendStatus(200)
+})
 
 app.listen(port, () => {
     console.log("the voting system is running on %d port", port)
