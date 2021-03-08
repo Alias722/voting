@@ -8,3 +8,7 @@ I put this project to Github.com
 Hope that anyone sees a bug in the project can report
 and help fixing it
 
+
+If you want to use this system
+First, you will have to change the first websiteURL in app.js
+Second, the post section in http template you need to change either

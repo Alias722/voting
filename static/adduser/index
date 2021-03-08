@@ -30,7 +30,7 @@
 	<img src="/static/login/images/img-01.png" alt="IMG">
 	</div>
 
-	<form class="login100-form validate-form" action='https://voting.sivir.pw/adduser' method="POST">
+	<form class="login100-form validate-form" action='http://localhost/adduser' method="POST">
 		<span class="login100-form-title">新增使用者</span>
 		<div class="wrap-input100 validate-input" data-validate = "Username is required">
 			<input class="input100" type="text" name="name" placeholder="Username">
