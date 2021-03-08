@@ -2,6 +2,8 @@
 const register = false
 const cookieParserName = "HelloWorldhaha"
 
+const websiteURL = "localhost"
+
 //import files
 const main = require('./main')
 
@@ -113,9 +115,9 @@ app.all('/adduser',urlencodedParser,(req,res)=>{
 			var sql = 'insert into logininfo (email,username,password) values ("'+ mysql.escape(email) + '","' + mysql.escape(username) + '","' + mysql.escape(passwd) + '");'
 			console.log(sql)
 			conn.query(sql)
-			return res.send("<script>alert('account created redirecting to login page');location.replace('https://voting.sivir.pw/login')</script>")
+			return res.send("<script>alert('account created redirecting to login page');location.replace('https://"+websiteURL+"/login')</script>")
 		}else{
-			return res.send("<script>alert('function not enabled');location.replace('https://voting.sivir.pw/')</script>")
+			return res.send("<script>alert('function not enabled');location.replace('https://"+websiteURL+"/')</script>")
 		}
 	}else{
 		//print add user page
@@ -198,7 +200,7 @@ app.all('/login',urlencodedParser,(req,res)=>{
 			if(!result.length){
 				//username not queried
 				console.log("username not match")
-				return res.send('<script>alert("INVALID username or password");location.replace("https://voting.sivir.pw/login")</script>')
+				return res.send('<script>alert("INVALID username or password");location.replace("https://'+websiteURL+'/login")</script>')
 			}else{
 				//verify the password
 				var sqlpassword = result[0].password
@@ -211,7 +213,7 @@ app.all('/login',urlencodedParser,(req,res)=>{
 					var sqlquery = 'insert into session (id,time,email) values ("'+mysql.escape(sessionid)+'",'+timenow+',"'+mysql.escape(email)+'");'
 					conn.query(sqlquery)
 					res.cookie('id', sessionid, {signed: true,httpOnly: true,overwrite: true})
-					return res.redirect(302,"https://voting.sivir.pw/login")
+					return res.redirect(302,"https://"+websiteURL+"/login")
 					//reload page
 					console.log("here")
 					//return res.send('<script>location.replace("https://voting.sivir.pw/login")</script>')
