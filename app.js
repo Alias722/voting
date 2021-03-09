@@ -2,7 +2,7 @@
 const register = true
 const cookieParserName = "HelloWorldhaha"
 
-const websiteURL = "http://localhost/"
+const websiteURL = "http://127.0.0.1/"
 
 //import files
 
@@ -40,9 +40,9 @@ app.use(cookieParser(cookieParserName), (req, res, next) => {
     }
     //check cookie status
     temp = 'select * from session where id = "' + mysql.escape(sessionid) + '";'
-    console.log(temp)
+    //console.log(temp)
     conn.query(temp, (err, result) => {
-        console.log(result)
+        //console.log(result)
         if (result.length === 0) {
             //cookie session not correct
             res.cookie('id', sessionid, {maxAge: 0, signed: true, httpOnly: true, overwrite: true});
@@ -90,7 +90,7 @@ conn.query("delete from session")
 app.get('/', (req, res) => {
     //main page
     console.log("mainscreen")
-    console.log()
+    //console.log()
 
     fs.readFile("static/main/index", (err, data) => {
         if (err) throw err
@@ -103,13 +103,13 @@ app.all('/adduser', urlencodedParser, (req, res) => {
     if (add) {
         //add new user
         console.log("adduser recieved")
-        console.log("add user")
+        //console.log("add user")
         var email = req.body.email
         var passwd = req.body.pass
         var username = req.body.name
         if (register) {
             var sql = 'insert into logininfo (email,username,password) values ("' + mysql.escape(email) + '","' + mysql.escape(username) + '","' + mysql.escape(passwd) + '");'
-            console.log(sql)
+            //console.log(sql)
             conn.query(sql)
             return res.send("<script>alert('account created redirecting to login page');location.replace('" + websiteURL + "login')</script>")
         } else {
@@ -120,7 +120,7 @@ app.all('/adduser', urlencodedParser, (req, res) => {
         fs.readFile("static/adduser/index", (err, data) => {
             if (err) throw err;
             console.log("printing adding user page")
-            console.log()
+            //console.log()
             return res.send(data.toString())
         })
     }
@@ -137,20 +137,20 @@ app.all('/login', urlencodedParser, (req, res) => {
         if(!auth){
             //no auth print login page
             console.log("printing login page")
-            console.log()
+            //console.log()
             fs.readFile("static/login/index", (err, data) => {
                 if (err) throw err;
                 return res.send(data.toString())
             })
         }else{
             //receive post login request
-            console.log("entering log in page")
+            console.log("entering login page")
             var email = req.body.email
             var passwd = req.body.pass
             temp = 'select * from logininfo where email="' + mysql.escape(email) + '";'
             //console.log(temp)
             conn.query(temp, (err, result) => {
-                console.log(result)
+                //console.log(result)
                 if (!result.length) {
                     //username not queried
                     console.log("username not match")
@@ -196,7 +196,7 @@ app.all('/auth', urlencodedParser,(req,res)=>{
         //no session id
         res.redirect(301,websiteURL+'login')
     }else{
-        var stu = req.body.stu
+        const stu = req.body.stu
         if(!stu){
             //no student post request
             //print the page to insert student number
@@ -206,7 +206,37 @@ app.all('/auth', urlencodedParser,(req,res)=>{
             })
         }else{
             //receive stu post request
-            res.send("handling")
+            const stuid = req.body.stuid
+            temp = 'select * from student where id="'+stuid+'";'
+            console.log(temp)
+            conn.query(temp,(error,result)=>{
+                //console.log(result)
+                if(!result[0].id){
+                    //not exist
+                    res.send("Please insert valid student id")
+                }else{
+                    //found student in database
+                    //get operator email
+                    if(result[0].status === 1){
+                        //ticket taken
+                        tosend = "無效已經領取<br>於帳號："+result[0].modified+"<br>姓名："+result[0].name+"<br>班級座號："+result[0].class+result[0].number+"<br>學號："+result[0].id
+                        return res.send(tosend)
+                    }else{
+                        temp = 'select * from session where id="' + mysql.escape(sessionid)+'";'
+                        conn.query(temp,(error,result)=>{
+                            //console.log(result)
+                            var user = result[0].email
+                            console.log(user)
+                            sql = temp = 'update student set modified = ' + user + ',status = "1" where id = "' + stuid + '";'
+                            console.log(sql)
+                            conn.query(sql)
+                        })
+                        tosend = "資格符合 <br>姓名："+result[0].name+"<br>班級座號："+result[0].class+result[0].number+"<br>學號："+result[0].id
+                        return res.send(tosend)
+                    }
+                }
+            })
+            //end else
         }
     }
     //res.sendStatus(200)
