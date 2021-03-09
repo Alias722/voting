@@ -20,27 +20,6 @@ const port = 17002 // this node.js is working on this port using nginx proxy to 
 
 //init
 
-app.get('/verify',(req,res)=>{
-	let total = 0;
-	for(i = 0;i <= 667;i++){
-		temp = 'select * from student where id="810'+i+'";'
-		console.log(temp)
-		conn.query(temp,(err,result)=>{
-			//console.log(result)
-			//console.log(result)
-			total++
-			if(!result){
-				console.log("810%d gone\n",i)
-			}else{
-				total++
-			}
-		})
-	}
-	console.log(total)
-	console.log('run')
-	res.sendStatus(200);
-})
-
 //every request will all pass here
 //app.use(cookieParser(cookieParserName),(req,res)
 var temp
