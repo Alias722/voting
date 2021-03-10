@@ -1,14 +1,24 @@
-This is the project that I use to easily count tickets
-And let others see how many votes that their favorites got immediately
+這個程式是我拿來當作台南一中選舉委員會的驗證系統
+然後希望可以順便建立開票系統，讓開票過程變得更加刺激
 
-using node.js as the main programming language
-I think it is easier to begin with
+採用 node.js 作為主要的開發語言
+因為我覺得它看起來比較簡單
 
-I put this project to Github.com
-Hope that anyone sees a bug in the project can report
-and help fixing it
+如何使用？
+我會把連結放在這裡：
+https://bp.sivir.pw/?page_id=76
+然後你會發現裡面沒有東西只有標題
+因為我還沒有時間打嘛
 
+This program is built to run the voting verification system in my high school TNFSH
+And I hope I can maybe add invoicing function later on
 
-If you want to use this system
-First, you will have to change the first websiteURL in app.js
-Second, the post section in http template you need to change either
+Using node.js as the default operating language
+Because I think it looks way easier and more understandable
+
+Well, how to use this project
+I will put the link below:
+https://bp.sivir.pw/?page_id=76
+However, you might think the link direct to nothing but a title
+oh, that is probably I still don't have time dealing with it
+

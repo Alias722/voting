@@ -1,8 +1,8 @@
 //arguments
-const register = true
+const register = false
 const cookieParserName = "HelloWorldhaha"
 
-const websiteURL = "http://127.0.0.1/"
+const websiteURL = "https://voting.sivir.pw/"
 
 //import files
 
@@ -211,7 +211,7 @@ app.all('/auth', urlencodedParser,(req,res)=>{
             console.log(temp)
             conn.query(temp,(error,result)=>{
                 //console.log(result)
-                if(!result[0].id){
+                if(result.length === 0){
                     //not exist
                     res.send("Please insert valid student id")
                 }else{
