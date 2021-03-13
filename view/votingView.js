@@ -44,7 +44,7 @@ app.get('/', (req, res) => {
     console.log("mainscreen")
     //console.log()
 
-    fs.readFile("static/main/index", (err, data) => {
+    fs.readFile("static/main/index.html", (err, data) => {
         if (err) throw err
         return res.send(data.toString())
     })
