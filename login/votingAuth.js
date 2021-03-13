@@ -239,6 +239,42 @@ app.all('/auth', urlencodedParser,(req,res)=>{
     //res.sendStatus(200)
 })
 
+app.all('addpost',(req,res)=>{
+    const sessionid = req.signedCookies.id
+
+    if(!sessionid){
+        //no session id
+        res.redirect(301,'/login')
+    }else{
+	//showing page
+	temp = "select * from post;"
+	
+	conn.query(temp,(err,result,fields)=>{
+		var rows = "<h1>A place to add new post</h1>"
+		// prepare what to print
+		for results in result{
+			//get things in results
+			id = results.id
+			time = results.time
+			title = results.title
+			subtitle = results.subtitle
+			context = results.context
+			//print things
+			row = "id: "+id+"<br>time: "+time+"<br>title: "+title+"<br>subtitle: "+subtitle+"context: "+context+"<br>"
+			//add edit button
+			row += "<button href='/config/"+id+"'></button><br>"
+			rows += row
+
+		}
+		//prepare add button
+		// new row button
+		rows += "<button href='/newpost'>Add new post</button>"
+		res.status(200).send(rows)
+	})
+    }
+	
+})
+
 app.listen(port, () => {
     console.log("the voting system is running on %d port", port)
 
