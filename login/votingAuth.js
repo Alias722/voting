@@ -2,8 +2,6 @@
 const register = false
 const cookieParserName = "HelloWorldhaha"
 
-const websiteURL = "https://admin.sivir.pw/"
-
 //import files
 
 const cookieParser = require("cookie-parser")
@@ -48,7 +46,7 @@ app.use(cookieParser(cookieParserName), (req, res, next) => {
             res.cookie('id', sessionid, {maxAge: 0, signed: true, httpOnly: true, overwrite: true});
             console.log("cookie deleted")
             //reload page
-            return res.redirect(301,websiteURL)
+            return res.redirect(302, '/')
             //return next()
         }
         email = result[0].email
@@ -58,7 +56,7 @@ app.use(cookieParser(cookieParserName), (req, res, next) => {
             res.cookie('id', sessionid, {maxAge: 0, signed: true, httpOnly: true, overwrite: true});
             conn.query('delete from session where id = "' + mysql.escape(sessionid) + '";')
             console.log("cookie expired deleted")
-            return res.redirect(301,websiteURL)
+            return res.redirect(302, '/')
             //return next()
         } else {
             //update session
@@ -91,8 +89,8 @@ app.get('/', (req, res) => {
     //main page
     console.log("mainscreen")
     //console.log()
-	
-    res.redirect(301,"login")
+
+    res.redirect(302, "/login")
 })
 
 app.all('/adduser', urlencodedParser, (req, res) => {
@@ -108,9 +106,9 @@ app.all('/adduser', urlencodedParser, (req, res) => {
             var sql = 'insert into logininfo (email,username,password) values ("' + mysql.escape(email) + '","' + mysql.escape(username) + '","' + mysql.escape(passwd) + '");'
             //console.log(sql)
             conn.query(sql)
-            return res.send("<script>alert('account created redirecting to login page');location.replace('" + websiteURL + "login')</script>")
+            return res.send("<script>alert('account created redirecting to login page');location.replace('/login')</script>")
         } else {
-            return res.send("<script>alert('function not enabled');location.replace('" + websiteURL + "')</script>")
+            return res.send("<script>alert('function not enabled');location.replace('/login')</script>")
         }
     } else {
         //print add user page
@@ -128,10 +126,10 @@ app.all('/login', urlencodedParser, (req, res) => {
     //with the parameter "auth" can lead to different page
 
     const sessionid = req.signedCookies.id;
-    if(!sessionid){
+    if (!sessionid) {
         //session not exist
         var auth = req.body.auth
-        if(!auth){
+        if (!auth) {
             //no auth print login page
             console.log("printing login page")
             //console.log()
@@ -139,7 +137,7 @@ app.all('/login', urlencodedParser, (req, res) => {
                 if (err) throw err;
                 return res.send(data.toString())
             })
-        }else{
+        } else {
             //receive post login request
             console.log("entering login page")
             var email = req.body.email
@@ -151,11 +149,11 @@ app.all('/login', urlencodedParser, (req, res) => {
                 if (!result.length) {
                     //username not queried
                     console.log("username not match")
-                    return res.send('<script>alert("INVALID username or password");location.replace("' + websiteURL + 'login")</script>')
+                    return res.send('<script>alert("INVALID username or password");location.replace("/login")</script>')
                 } else {
                     //account exist , verify the password
                     var sqlpassword = result[0].password
-			console.log(sqlpassword)
+                    console.log(sqlpassword)
                     if (sqlpassword === mysql.escape(passwd)) {
                         //password is match with the mysql database
                         console.log("Correct")
@@ -168,15 +166,15 @@ app.all('/login', urlencodedParser, (req, res) => {
                         res.cookie('id', sessionid, {signed: true, httpOnly: true, overwrite: true})
 
                         //reload page
-                        return res.redirect(302, websiteURL + "login")
+                        return res.redirect(302, "/login")
                     } else {
                         //password is not match with mysql database
-                        return res.redirect(302, websiteURL + "login")
+                        return res.redirect(302, "/login")
                     }
                 }
             })
         }
-    }else{
+    } else {
         //logged in
         fs.readFile("static/handwrite/function/index.html", (err, data) => {
             if (err) throw err
@@ -186,41 +184,41 @@ app.all('/login', urlencodedParser, (req, res) => {
     }
 })
 
-app.all('/auth', urlencodedParser,(req,res)=>{
+app.all('/auth', urlencodedParser, (req, res) => {
     const sessionid = req.signedCookies.id
 
-    if(!sessionid){
+    if (!sessionid) {
         //no session id
-        res.redirect(301,websiteURL+'login')
-    }else{
+        res.redirect(302, 'login')
+    } else {
         const stu = req.body.stu
-        if(!stu){
+        if (!stu) {
             //no student post request
             //print the page to insert student number
             fs.readFile("static/handwrite/stu/index.html", (err, data) => {
                 if (err) throw err
                 return res.send(data.toString())
             })
-        }else{
+        } else {
             //receive stu post request
             const stuid = req.body.stuid
-            temp = 'select * from student where id="'+stuid+'";'
+            temp = 'select * from student where id="' + stuid + '";'
             console.log(temp)
-            conn.query(temp,(error,result)=>{
+            conn.query(temp, (error, result) => {
                 //console.log(result)
-                if(result.length === 0){
+                if (result.length === 0) {
                     //not exist
                     res.send("Please insert valid student id")
-                }else{
+                } else {
                     //found student in database
                     //get operator email
-                    if(result[0].status === 1){
+                    if (result[0].status === 1) {
                         //ticket taken
-                        tosend = "無效已經領取<br>於帳號："+result[0].modified+"<br>姓名："+result[0].name+"<br>班級座號："+result[0].class+result[0].number+"<br>學號："+result[0].id
+                        tosend = "無效已經領取<br>於帳號：" + result[0].modified + "<br>姓名：" + result[0].name + "<br>班級座號：" + result[0].class + result[0].number + "<br>學號：" + result[0].id
                         return res.send(tosend)
-                    }else{
-                        temp = 'select * from session where id="' + mysql.escape(sessionid)+'";'
-                        conn.query(temp,(error,result)=>{
+                    } else {
+                        temp = 'select * from session where id="' + mysql.escape(sessionid) + '";'
+                        conn.query(temp, (error, result) => {
                             //console.log(result)
                             var user = result[0].email
                             console.log(user)
@@ -228,7 +226,7 @@ app.all('/auth', urlencodedParser,(req,res)=>{
                             console.log(sql)
                             conn.query(sql)
                         })
-                        tosend = "資格符合 <br>姓名："+result[0].name+"<br>班級座號："+result[0].class+result[0].number+"<br>學號："+result[0].id
+                        tosend = "資格符合 <br>姓名：" + result[0].name + "<br>班級座號：" + result[0].class + result[0].number + "<br>學號：" + result[0].id
                         return res.send(tosend)
                     }
                 }
@@ -237,6 +235,124 @@ app.all('/auth', urlencodedParser,(req,res)=>{
         }
     }
     //res.sendStatus(200)
+})
+
+app.get('/post', (req, res) => {
+    const sessionid = req.signedCookies.id
+    if (!sessionid) {
+        //no session id
+        console.log("no session id")
+        res.redirect(302, '/login')
+    } else {
+        //showing page
+        temp = "select * from post;"
+        conn.query(temp, (err, results) => {
+            var rows = "<h1>A place to add new post</h1>"
+            // prepare what to print
+            console.log(results)
+            for (place in results) {
+                //get things in results
+                id = results[place].id
+                time = results[place].time
+                title = results[place].title
+                subtitle = results[place].subtitle
+                context = results[place].context
+                //print things
+                row = "id: " + id + "<br>time: " + time + "<br>title: " + title + "<br>subtitle: " + subtitle + "<br>context: " + context + "<br>"
+                //add edit button
+                row += "<form action='/config/" + id + "'><input type='submit' value='修改貼文'/></form>"
+                rows += row
+            }
+            //prepare add button
+            // new row button
+            rows += "<form action='/newpost'><input type='submit' value='新貼文'/></form>"
+            res.status(200).send(rows)
+        })
+    }
+})
+
+app.all('/newpost', urlencodedParser, (req, res) => {
+    if (!sessionid) {
+        //no session id
+        res.redirect(302, 'login')
+    } else {
+        if (req.body.add) {
+                temp = "insert into post (title,context,time,subtitle) values ('"+req.body.title+"','"+req.body.context+"','"+req.body.time+"','"+req.body.subtitle+"');"
+                console.log(temp)
+                conn.query(temp)
+        } else {
+            fs.readFile("static/handwrite/addpost/index.html", (err, data) => {
+                if (err) throw err
+                return res.send(data.toString())
+            })
+        }
+
+    }
+})
+
+app.all('/config', urlencodedParser, (req, res) => {
+    const sessionid = req.signedCookies.id
+    if(sessionid){
+        console.log(req.body.modify)
+        if(req.body.modify){
+            //recieve modify command
+            console.log()
+            console.log("Maybe it is corrupted")
+            temp = "update post set time='"+req.body.date+"',context='"+req.body.content+"',title='"+req.body.title+"',subtitle='"+req.body.subtitle+"' where id="+req.body.id+";"
+            console.log(temp)
+            conn.query(temp)
+            res.redirect(302,"/post")
+        }else{
+            res.redirect(302,"/post")
+        }
+    }
+})
+
+app.all('/config/:postid', (req, res) => {
+    const sessionid = req.signedCookies.id
+    console.log("Entering config page")
+    if (!sessionid) {
+        //no session id
+        console.log("redirect to login page owing to no valid sessionid")
+        res.redirect(302, 'login')
+    } else {
+        console.log("TIME to config the wrong page")
+        var modify = req.query.modify
+        if (modify) {
+            //haha
+            // it is impossible to get here
+            // If it does, it means someone is playing with it
+        } else {
+            //no modify command
+            //return modify page
+            temp = "select * from post where id=" + req.params.postid + ";"
+            console.log(temp)
+            conn.query(temp, (err, results) => {
+                console.log(results)
+                var data = fs.readFileSync("static/handwrite/modifypost/index.html").toString()
+                if (results === undefined) {
+                    return res.send("page not exist")
+                } else {
+                    var params = {
+                        title: results[0].title,
+                        subtitle: results[0].subtitle,
+                        date: results[0].time,
+                        content: results[0].context,
+                        id: results[0].id
+                    }
+                    for (var key in params) {
+                        data = data.replace('{%' + key + '%}', params[key]);
+                    }
+                    return res.send(data.toString())
+                }
+            })
+        }
+
+    }
+})
+
+app.all('*', (req, res) => {
+    res.status(404).send("Page not found")
 })
 
 app.listen(port, () => {
