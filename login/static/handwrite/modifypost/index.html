@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>修改貼文</title>
+    <link rel="stylesheet" type="text/css" href="/static/handwrite/function/form.css">
+</head>
+<body>
+<form action='/config' method="POST">
+    <h1>修改貼文</h1>
+    <span>Title</span>
+    <div class="wrap-input100 validate-input" data-validate="Title is required">
+        <input class="input100" type="text" name="title" value="{%title%}">
+    </div>
+
+    <span>Date</span>
+    <div class="wrap-input100 validate-input" data-validate="Date is required">
+        <input class="input100" type="text" name="date" value="{%date%}">
+    </div>
+
+    <span>Subtitle</span>
+    <div class="wrap-input100 validate-input" data-validate="subtitle is required">
+        <input class="input100" type="text" name="subtitle" value="{%subtitle%}">
+    </div>
+
+    <span>Content</span>
+    <div class="wrap-input100 validate-input" data-validate="Content is required">
+        <input class="input100" type="text" name="content" value="{%content%}">
+    </div>
+    <input type="text" name="id" value="{%id%}" id="Iwanttohide">
+    <input type="text" name="modify" value="true" id="Iwanttohide">
+    <div class="container-login100-form-btn">
+        <button class="login100-form-btn">
+            Update
+        </button>
+    </div>
+
+</form>
+<script src="/static/handwrite/function/jquery/jquery-3.2.1.min.js"></script>
+<script src="/static/handwrite/function/main.js"></script>
+</body>
+</html>

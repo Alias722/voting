@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>新增貼文</title>
+    <link rel="stylesheet" type="text/css" href="/static/handwrite/function/form.css">
+</head>
+<body>
+<form action='/newpost' method="POST">
+    <h1>新增貼文</h1>
+    <span>Title</span>
+    <div class="wrap-input100 validate-input" data-validate="Title is required">
+        <input class="input100" type="text" name="title" placeholder="Title">
+    </div>
+
+    <span>Date</span>
+    <div class="wrap-input100 validate-input" data-validate="Date is required">
+        <input class="input100" type="text" name="time" placeholder="March, 08 ,2021">
+    </div>
+
+    <span>Subtitle</span>
+    <div class="wrap-input100 validate-input" data-validate="subtitle is required">
+        <input class="input100" type="text" name="subtitle" placeholder="subtitle">
+    </div>
+
+    <span>Content</span>
+    <div class="wrap-input100 validate-input" data-validate="Content is required">
+        <input class="input100" type="text" name="context" placeholder="Content">
+    </div>
+    <input type="text" name="add" value="true" id="Iwanttohide">
+    <div class="container-login100-form-btn">
+        <button class="login100-form-btn">
+            CREATE
+        </button>
+    </div>
+
+</form>
+<script src="/static/handwrite/function/jquery/jquery-3.2.1.min.js"></script>
+<script src="/static/handwrite/function/main.js"></script>
+</body>
+</html>
