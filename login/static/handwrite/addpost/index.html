@@ -9,22 +9,22 @@
     <h1>新增貼文</h1>
     <span>Title</span>
     <div class="wrap-input100 validate-input" data-validate="Title is required">
-        <input class="input100" type="text" name="title" placeholder="Title">
+        <input class="input100" type="text" name="title" placeholder="Title" maxlength="40">
     </div>
 
     <span>Date</span>
     <div class="wrap-input100 validate-input" data-validate="Date is required">
-        <input class="input100" type="text" name="time" placeholder="March, 08 ,2021">
+        <input class="input100" type="text" name="time" placeholder="March, 08 ,2021" maxlength="40">
     </div>
 
     <span>Subtitle</span>
     <div class="wrap-input100 validate-input" data-validate="subtitle is required">
-        <input class="input100" type="text" name="subtitle" placeholder="subtitle">
+        <input class="input100" type="text" name="subtitle" placeholder="subtitle" maxlength="200">
     </div>
 
-    <span>Content</span>
+    <span>Content: 換行要用&lt;br&gt;</span>
     <div class="wrap-input100 validate-input" data-validate="Content is required">
-        <input class="input100" type="text" name="context" placeholder="Content">
+        <input class="input100" type="textarea" name="context" placeholder="Content" maxlength="4000" rows="100" cols="50">
     </div>
     <input type="text" name="add" value="true" id="iwanttohide">
     <div class="container-login100-form-btn">

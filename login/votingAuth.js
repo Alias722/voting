@@ -253,6 +253,7 @@ app.get('/post', (req, res) => {
         temp = "select * from post;"
         conn.query(temp, (err, results) => {
             var rows = "<h1>A place to add new post</h1>"
+            rows += "<form action='/newpost'><input type='submit' value='新貼文'/></form>"
             // prepare what to print
             console.log(results)
             for (place in results) {
@@ -270,7 +271,6 @@ app.get('/post', (req, res) => {
             }
             //prepare add button
             // new row button
-            rows += "<form action='/newpost'><input type='submit' value='新貼文'/></form>"
             res.status(200).send(rows)
         })
     }
@@ -285,6 +285,7 @@ app.all('/newpost', urlencodedParser, (req, res) => {
                 temp = "insert into post (title,context,time,subtitle) values ('"+req.body.title+"','"+req.body.context+"','"+req.body.time+"','"+req.body.subtitle+"');"
                 console.log(temp)
                 conn.query(temp)
+            return res.redirect(302,'post')
         } else {
             fs.readFile("static/handwrite/addpost/index.html", (err, data) => {
                 if (err) throw err

@@ -9,22 +9,22 @@
     <h1>修改貼文</h1>
     <span>Title</span>
     <div class="wrap-input100 validate-input" data-validate="Title is required">
-        <input class="input100" type="text" name="title" value="{%title%}">
+        <input class="input100" type="text" name="title" value="{%title%}" maxlength="40">
     </div>
 
     <span>Date</span>
     <div class="wrap-input100 validate-input" data-validate="Date is required">
-        <input class="input100" type="text" name="date" value="{%date%}">
+        <input class="input100" type="text" name="date" value="{%date%}" maxlength="40">
     </div>
 
     <span>Subtitle</span>
     <div class="wrap-input100 validate-input" data-validate="subtitle is required">
-        <input class="input100" type="text" name="subtitle" value="{%subtitle%}">
+        <input class="input100" type="text" name="subtitle" value="{%subtitle%}" maxlength="200">
     </div>
 
-    <span>Content</span>
+    <span>Content: 換行要用&lt;br&gt;</span>
     <div class="wrap-input100 validate-input" data-validate="Content is required">
-        <input class="input100" type="text" name="content" value="{%content%}">
+        <input class="input100" type="textarea" name="content" value="{%content%}" maxlength="4000" rows="100" cols="50">
     </div>
     <input type="text" name="id" value="{%id%}" id="iwanttohide">
     <input type="text" name="modify" value="true" id="iwanttohide">
