@@ -93,6 +93,11 @@ app.get('/', (req, res) => {
     res.redirect(302, "/login")
 })
 
+app.get('/logout',(req,res)=>{
+    res.cookie('id', sessionid, {maxAge: 0, signed: true, httpOnly: true, overwrite: true})
+    res.redirect(302,'/')
+})
+
 app.all('/adduser', urlencodedParser, (req, res) => {
     var add = req.body.adduser;
     if (add) {
