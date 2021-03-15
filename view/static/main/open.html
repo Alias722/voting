@@ -14,7 +14,10 @@
 		<noscript><link rel="stylesheet" href="/static/main/assets/css/noscript.css" /></noscript>
 	</head>
 	<body class="is-preload">
-
+<script>
+	alert("尚未開票，功能未開放")
+	location.replace('/')
+</script>
 		<!-- Wrapper -->
 			<div id="wrapper">
 
@@ -26,7 +29,11 @@
 				<!-- Nav -->
 					<nav id="nav">
 						<ul class="links">
-							<!--<li class="active"><a href="elements.html">Elements Reference</a></li>-->
+							<ul class="links">
+								<li><a href="/">公告事項</a></li>
+								<li><a href="/policy">政見</a></li>
+								<li class="active"><a href="/opening">開票</a></li>
+							</ul>
 						</ul>
 						<ul class="icons">
 							<li><a href="#" class="icon brands fa-twitter"><span class="label">Twitter</span></a></li>

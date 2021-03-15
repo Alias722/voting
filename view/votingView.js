@@ -61,15 +61,12 @@ app.get('/main/:pageid',(req,res)=>{
 	count = "select count(*) as cnt from post"
 
 	conn.query(count,(err,postcount)=>{
-	    console.log(postcount[0].cnt)
         var begin = postcount[0].cnt-5*pageid+1//req.params.pageid*5-4
         var end = postcount[0].cnt-5*pageid+5//(req.params.pageid*5)
-        console.log("begin : %d,end : %d ",begin,end)
         temp = "select * from post where id between "+begin+" AND "+end+";"
         conn.query(temp,(err,results)=>{
             var data = fs.readFileSync("static/main/renderheader.html").toString()
             var body = fs.readFileSync("static/main/renderbody.html").toString()
-            console.log(results)
             for(var place = 4;place >= 0;--place){
                 if(results[place] === undefined){
                     continue;
@@ -87,14 +84,12 @@ app.get('/main/:pageid',(req,res)=>{
             return res.status(200).send(data)
         })
     })
-
 })
 
 app.get('/pages/:pagenum',(req,res)=>{
     postid = parseInt(req.params.pagenum,10)
     temp = 'select * from post where id = '+postid+';'
     conn.query(temp,(error,result)=>{
-        console.log(result)
         if(result.length === 0){
             return res.status(404).send("not found")
         }
@@ -105,15 +100,22 @@ app.get('/pages/:pagenum',(req,res)=>{
             title: sqltitle,
             context: sqlcontext
         },(err,data)=>{
-            console.log("rendering files")
             return res.send(data)
         })
 
     })
-
-
-
 })
+
+app.get('/opening',(req,res)=>{
+    var body = fs.readFileSync("static/main/open.html").toString()
+    res.status(200).send(body)
+})
+
+app.get('/policy',(req,res)=>{
+    var body = fs.readFileSync("static/main/policy.html").toString()
+    res.status(200).send(body)
+})
+
 app.get('*',(req,res)=>{
     res.status(404).send("Sooory,Page not found")
 })
