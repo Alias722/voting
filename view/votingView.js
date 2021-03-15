@@ -56,28 +56,35 @@ app.get('/main/:pageid',(req,res)=>{
 	if(req.params.pageid < 1){
 		return res.redirect(301,'/main/1')
 	}
-	var begin = req.params.pageid*5-4
-	var end = req.params.pageid*5
-	temp = "select * from post where id between "+begin+" AND "+end+";"
-	conn.query(temp,(err,results)=>{
-		var data = fs.readFileSync("static/main/renderheader.html").toString()
-		var body = fs.readFileSync("static/main/renderbody.html").toString()
-		for(place in results){
-			if(results[place] === undefined){
-				continue;
-			}else{
-				var tmp = body
-                params = {title: results[place].title,subtitle: results[place].subtitle,time: results[place].time,id: results[place].id}
-				for(var key in params){
-					tmp = tmp.replace('{%'+key+'%}',params[key])
-				}
-				data += tmp
-			}
-		}
-		var footer = fs.readFileSync("static/main/renderfooter.html").toString()
-		data += footer
-		return res.status(200).send(data)
-	})
+	count = "select count(*) as cnt from post"
+	conn.query(count,(err,postcount)=>{
+	    console.log(postcount[0].cnt)
+        var begin = postcount[0].cnt-5*req.params.pageid+1//req.params.pageid*5-4
+        var end = postcount[0].cnt-5*req.params.pageid+5//(req.params.pageid*5)
+        console.log("begin : %d,end : %d ",begin,end)
+        temp = "select * from post where id between "+begin+" AND "+end+";"
+        conn.query(temp,(err,results)=>{
+            var data = fs.readFileSync("static/main/renderheader.html").toString()
+            var body = fs.readFileSync("static/main/renderbody.html").toString()
+            console.log(results)
+            for(var place = 4;place >= 0;--place){
+                if(results[place] === undefined){
+                    continue;
+                }else{
+                    var tmp = body
+                    params = {title: results[place].title,subtitle: results[place].subtitle,time: results[place].time,id: results[place].id}
+                    for(var key in params){
+                        tmp = tmp.replace('{%'+key+'%}',params[key])
+                    }
+                    data += tmp
+                }
+            }
+            var footer = fs.readFileSync("static/main/renderfooter.html").toString()
+            data += footer
+            return res.status(200).send(data)
+        })
+    })
+
 })
 
 app.get('/pages/:pagenum',(req,res)=>{
