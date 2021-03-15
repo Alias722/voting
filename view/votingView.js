@@ -39,6 +39,7 @@ conn.connect((err) => {
 })
 
 conn.query("delete from session")
+
 app.get('/', (req, res) => {
     //main page
     console.log("mainscreen")
@@ -53,14 +54,16 @@ app.get('/', (req, res) => {
 
 app.get('/main/:pageid',(req,res)=>{
 	//entering main page render section
-	if(req.params.pageid < 1){
+	const pageid = parseInt(req.params.pageid,10)
+    if(pageid < 1){
 		return res.redirect(301,'/main/1')
 	}
 	count = "select count(*) as cnt from post"
+
 	conn.query(count,(err,postcount)=>{
 	    console.log(postcount[0].cnt)
-        var begin = postcount[0].cnt-5*req.params.pageid+1//req.params.pageid*5-4
-        var end = postcount[0].cnt-5*req.params.pageid+5//(req.params.pageid*5)
+        var begin = postcount[0].cnt-5*pageid+1//req.params.pageid*5-4
+        var end = postcount[0].cnt-5*pageid+5//(req.params.pageid*5)
         console.log("begin : %d,end : %d ",begin,end)
         temp = "select * from post where id between "+begin+" AND "+end+";"
         conn.query(temp,(err,results)=>{
@@ -88,8 +91,7 @@ app.get('/main/:pageid',(req,res)=>{
 })
 
 app.get('/pages/:pagenum',(req,res)=>{
-    postid = req.params.pagenum
-
+    postid = parseInt(req.params.pagenum,10)
     temp = 'select * from post where id = '+postid+';'
     conn.query(temp,(error,result)=>{
         console.log(result)
