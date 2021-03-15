@@ -43,11 +43,40 @@ app.get('/', (req, res) => {
     //main page
     console.log("mainscreen")
     //console.log()
-
-    fs.readFile("static/main/index.html", (err, data) => {
+    //redirect to /main/1
+    return res.redirect(301,'/main/1')
+    /*fs.readFile("static/main/index.html", (err, data) => {
         if (err) throw err
         return res.send(data.toString())
-    })
+    })*/
+})
+
+app.get('/main/:pageid',(req,res)=>{
+	//entering main page render section
+	if(req.params.pageid < 1){
+		return res.redirect(301,'/main/1')
+	}
+	var begin = req.params.pageid*5-4
+	var end = req.params.pageid*5
+	temp = "select * from post where id between "+begin+" AND "+end+";"
+	conn.query(temp,(err,results)=>{
+		var data = fs.readFileSync("static/main/renderheader.html").toString()
+		var body = fs.readFileSync("static/main/renderbody.html").toString()
+		for(place in results){
+			if(results[place].length === 0){
+				continue;
+			}else{
+				var tmp = body
+				for(var key in params){
+					tmp = tmp.replace('{%'+key+'%}',params[key])
+				}
+				data += tmp
+			}
+		}
+		var footer = fs.readFileSync("static/mainrenderfooter.html").toString()
+		data += footer
+		return res.status(200).send(data)
+	})
 })
 
 app.get('/pages/:pagenum',(req,res)=>{
