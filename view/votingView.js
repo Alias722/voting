@@ -67,6 +67,7 @@ app.get('/main/:pageid',(req,res)=>{
         conn.query(temp,(err,results)=>{
             var data = fs.readFileSync("static/main/renderheader.html").toString()
             var body = fs.readFileSync("static/main/renderbody.html").toString()
+
             for(var place = 4;place >= 0;--place){
                 if(results[place] === undefined){
                     continue;
@@ -81,7 +82,8 @@ app.get('/main/:pageid',(req,res)=>{
             }
             var footer = fs.readFileSync("static/main/renderfooter.html").toString()
             data += footer
-            return res.status(200).send(data)
+
+            return res.send(data)
         })
     })
 })
