@@ -63,17 +63,18 @@ app.get('/main/:pageid',(req,res)=>{
 		var data = fs.readFileSync("static/main/renderheader.html").toString()
 		var body = fs.readFileSync("static/main/renderbody.html").toString()
 		for(place in results){
-			if(results[place].length === 0){
+			if(results[place] === undefined){
 				continue;
 			}else{
 				var tmp = body
+                params = {title: results[place].title,subtitle: results[place].subtitle,time: results[place].time,id: results[place].id}
 				for(var key in params){
 					tmp = tmp.replace('{%'+key+'%}',params[key])
 				}
 				data += tmp
 			}
 		}
-		var footer = fs.readFileSync("static/mainrenderfooter.html").toString()
+		var footer = fs.readFileSync("static/main/renderfooter.html").toString()
 		data += footer
 		return res.status(200).send(data)
 	})
@@ -83,7 +84,8 @@ app.get('/pages/:pagenum',(req,res)=>{
     postid = req.params.pagenum
 
     temp = 'select * from post where id = '+postid+';'
-    conn.query(temp,(error,result,fields)=>{
+    conn.query(temp,(error,result)=>{
+        console.log(result)
         if(result.length === 0){
             return res.status(404).send("not found")
         }
