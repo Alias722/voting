@@ -14,7 +14,7 @@
 
     <span>Date</span>
     <div class="wrap-input100 validate-input" data-validate="Date is required">
-        <input class="input100" type="text" name="date" value="{%date%}" maxlength="40">
+        <input class="input100" type="text" name="date" value="{%time%}" maxlength="40">
     </div>
 
     <span>Subtitle</span>
@@ -24,7 +24,7 @@
 
     <span>Content: 換行要用&lt;br&gt;</span>
     <div class="wrap-input100 validate-input" data-validate="Content is required">
-        <input class="input100" type="textarea" name="content" value="{%content%}" maxlength="4000" rows="100" cols="50">
+        <textarea cols="100" rows="20" placeholder="字數上限為4000字" name="context">{%context%}</textarea>
     </div>
     <input type="hidden" name="id" value="{%id%}">
     <input type="hidden" name="modify" value="true">

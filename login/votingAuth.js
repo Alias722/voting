@@ -287,10 +287,39 @@ app.all('/newpost', urlencodedParser, (req, res) => {
                 conn.query(temp)
             return res.redirect(302,'post')
         } else {
-            fs.readFile("static/handwrite/addpost/index.html", (err, data) => {
+            var data = fs.readFileSync("static/handwrite/addpost/index.html").toString()
+            data = data.toString()
+
+            var month = new Array();
+            month[0] = "January";
+            month[1] = "February";
+            month[2] = "March";
+            month[3] = "April";
+            month[4] = "May";
+            month[5] = "June";
+            month[6] = "July";
+            month[7] = "August";
+            month[8] = "September";
+            month[9] = "October";
+            month[10] = "November";
+            month[11] = "December";
+            var d = new Date();
+            systemtimenow = month[d.getMonth()]+ " "+d.getDate()+", " + d.getFullYear()
+
+            params={timenow: systemtimenow}
+            for (var key in params) {
+                data = data.replace('{%' + key + '%}', params[key]);
+            }
+            return res.send(data)
+            /*fs.readFile("static/handwrite/addpost/index.html", (err, data) => {
                 if (err) throw err
+                systemtimenow = "timenow"
+                params={timenow: systemtimenow}
+                for (var key in params) {
+                    data = data.replace('{%' + key + '%}', params[key]);
+                }
                 return res.send(data.toString())
-            })
+            })*/
         }
 
     }
@@ -304,7 +333,7 @@ app.all('/config', urlencodedParser, (req, res) => {
             //recieve modify command
             console.log()
             console.log("Maybe it is corrupted")
-            temp = "update post set time='"+req.body.date+"',context='"+req.body.content+"',title='"+req.body.title+"',subtitle='"+req.body.subtitle+"' where id="+req.body.id+";"
+            temp = "update post set time='"+req.body.time+"',context='"+req.body.context+"',title='"+req.body.title+"',subtitle='"+req.body.subtitle+"' where id="+req.body.id+";"
             console.log(temp)
             conn.query(temp)
             res.redirect(302,"/post")
@@ -342,8 +371,8 @@ app.all('/config/:postid', (req, res) => {
                     var params = {
                         title: results[0].title,
                         subtitle: results[0].subtitle,
-                        date: results[0].time,
-                        content: results[0].context,
+                        time: results[0].time,
+                        context: results[0].context,
                         id: results[0].id
                     }
                     for (var key in params) {
