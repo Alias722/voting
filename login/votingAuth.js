@@ -14,7 +14,8 @@ const bodyParser = require("body-parser")//post parser (not using)
 //const jsonParser = bodyParser.json()//json parser
 const urlencodedParser = bodyParser.urlencoded({extended: false})//form parser  
 const mysql = require("mysql")
-const port = 17005 // this node.js is working on this port using nginx proxy to outside
+const systemconfig = require('../config.json')
+const port = systemconfig.loginport // this node.js is working on this port using nginx proxy to outside
 
 //init
 
@@ -129,7 +130,6 @@ app.all('/adduser', urlencodedParser, (req, res) => {
 app.all('/login', urlencodedParser, (req, res) => {
     //the login in app
     //with the parameter "auth" can lead to different page
-
     const sessionid = req.signedCookies.id;
     if (!sessionid) {
         //session not exist
@@ -191,7 +191,6 @@ app.all('/login', urlencodedParser, (req, res) => {
 
 app.all('/auth', urlencodedParser, (req, res) => {
     const sessionid = req.signedCookies.id
-
     if (!sessionid) {
         //no session id
         res.redirect(302, 'login')

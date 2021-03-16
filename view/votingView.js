@@ -1,26 +1,19 @@
 //arguments
 //import files
+const cookieParserName = "HelloWorldhaha"
 const express = require("express")//using http 
 const app = express()
 const fs = require("fs")//open file
 
+const cookieParser = require("cookie-parser")
 const mysql = require("mysql")
-const port = 17006 // this node.js is working on this port using nginx proxy to outside
+const systemconfig = require('../config.json')
+const port = systemconfig.viewport // this node.js is working on this port using nginx proxy to outside
 
 //init
 
 //every request will all pass here
 //app.use(cookieParser(cookieParserName),(req,res)
-
-function render(filename, params, callback) {
-    fs.readFile(filename, 'utf8', function (err, data) {
-        if (err) return callback(err);
-        for (var key in params) {
-            data = data.replace('{%' + key + '%}', params[key]);
-        }
-        callback(null, data); // 用 callback 傳回結果
-    });
-}
 
 const config = {
     //mysql configuration
@@ -82,7 +75,6 @@ app.get('/main/:pageid',(req,res)=>{
             }
             var footer = fs.readFileSync("static/main/renderfooter.html").toString()
             data += footer
-
             return res.send(data)
         })
     })
@@ -91,36 +83,58 @@ app.get('/main/:pageid',(req,res)=>{
 app.get('/pages/:pagenum',(req,res)=>{
     postid = parseInt(req.params.pagenum,10)
     temp = 'select * from post where id = '+postid+';'
+
     conn.query(temp,(error,result)=>{
         if(result.length === 0){
             return res.status(404).send("not found")
         }
-        sqltitle = result[0].title
-        sqlcontext = result[0].context
+        var data = fs.readFileSync('static/main/elements.html').toString()
+        params = {title: result[0].title,context: result[0].context}
 
-        render('static/main/elements.html',{
-            title: sqltitle,
-            context: sqlcontext
-        },(err,data)=>{
-            return res.send(data)
-        })
-
+        for(var key in params){
+            data = data.replace('{%'+key+'%}',params[key])
+        }
+        return res.send(data)
     })
 })
 
-app.get('/opening',(req,res)=>{
-    var body = fs.readFileSync("static/main/open.html").toString()
-    res.status(200).send(body)
+app.get('/opening',cookieParser(cookieParserName),(req,res)=>{
+    if(systemconfig.open){
+        var body = fs.readFileSync("static/main/open.html").toString()
+        res.status(200).send(body)
+    }else{
+        res.cookie('info', "尚未開票，功能未開放", {maxAge: 1000, signed: true, httpOnly: true, overwrite: true});
+        res.cookie('location', "/", {maxAge: 1000, signed: true, httpOnly: true, overwrite: true});
+        res.redirect(302,"/redirect")
+    }
 })
 
-app.get('/policy',(req,res)=>{
-    var body = fs.readFileSync("static/main/policy.html").toString()
-    res.status(200).send(body)
+app.get('/policy',cookieParser(cookieParserName),(req,res)=>{
+    if(systemconfig.policy){
+        var body = fs.readFileSync("static/main/policy.html").toString()
+        res.status(200).send(body)
+    }else{
+        res.cookie('info', "候選人政見尚未確定", {maxAge: 1000, signed: true, httpOnly: true, overwrite: true});
+        res.cookie('location', "/", {maxAge: 1000, signed: true, httpOnly: true, overwrite: true});
+        res.redirect(302,"/redirect")
+    }
+})
+
+app.get('/redirect',cookieParser(cookieParserName),(req,res)=>{
+    location = req.signedCookies.location
+    info = req.signedCookies.info
+    params = {location: location,info: info}
+    var data = fs.readFileSync("static/main/redirect.html").toString()
+    for(var key in params){
+        data = data.replace('{%'+key+'%}',params[key])
+    }
+    res.send(data)
 })
 
 app.get('*',(req,res)=>{
     res.status(404).send("Sooory,Page not found")
 })
+
 
 
 app.listen(port,()=>{
