@@ -10,8 +10,6 @@ const mysql = require("mysql")
 const systemconfig = require('../config.json')
 const port = systemconfig.viewport // this node.js is working on this port using nginx proxy to outside
 
-//init
-
 //every request will all pass here
 //app.use(cookieParser(cookieParserName),(req,res)
 
@@ -54,8 +52,8 @@ app.get('/main/:pageid',(req,res)=>{
         var end = postcount[0].cnt-5*pageid+5//(req.params.pageid*5)
         temp = "select * from post where id between "+begin+" AND "+end+";"
         conn.query(temp,(err,results)=>{
-            var data = fs.readFileSync("static/main/renderheader.html").toString()
-            var body = fs.readFileSync("static/main/renderbody.html").toString()
+            var data = fs.readFileSync("static/main/mainpage/renderheader.html").toString()
+            var body = fs.readFileSync("static/main/mainpage/renderbody.html").toString()
 
             for(var place = 4;place >= 0;--place){
                 if(results[place] === undefined){
@@ -69,7 +67,7 @@ app.get('/main/:pageid',(req,res)=>{
                     data += tmp
                 }
             }
-            var footer = fs.readFileSync("static/main/renderfooter.html").toString()
+            var footer = fs.readFileSync("static/main/footer.html").toString()
             data += footer
             return res.send(data)
         })
@@ -90,6 +88,9 @@ app.get('/pages/:pagenum',(req,res)=>{
         for(var key in params){
             data = data.replace('{%'+key+'%}',params[key])
         }
+
+        data += fs.readFileSync('static/main/footer.html').toString()
+
         return res.send(data)
     })
 })
@@ -97,6 +98,7 @@ app.get('/pages/:pagenum',(req,res)=>{
 app.get('/opening',cookieParser(cookieParserName),(req,res)=>{
     if(systemconfig.open){
         var body = fs.readFileSync("static/main/open.html").toString()
+        body += fs.readFileSync('static/main/footer.html').toString()
         res.status(200).send(body)
     }else{
         res.cookie('info', "尚未開票，功能未開放", {maxAge: 1000, signed: true, httpOnly: true, overwrite: true});
@@ -108,6 +110,7 @@ app.get('/opening',cookieParser(cookieParserName),(req,res)=>{
 app.get('/policy',cookieParser(cookieParserName),(req,res)=>{
     if(systemconfig.policy){
         var body = fs.readFileSync("static/main/policy.html").toString()
+        body += fs.readFileSync('static/main/footer.html').toString()
         res.status(200).send(body)
     }else{
         res.cookie('info', "候選人政見尚未確定", {maxAge: 1000, signed: true, httpOnly: true, overwrite: true});

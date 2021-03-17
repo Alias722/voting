@@ -14,15 +14,18 @@ $('#google-form').submit(function(form) {
         statusCode: {
             0: function(data) { //0 is when Google gives a CORS error, don't worry it went through
                 //success
-                alert("0 : sent")
+                alert("收到!!\n我們將會盡快回覆")
+                location.replace('/')
             },
             200: function(data) {//200 is a success code. it went through!
                 //success
-                alert("200 : sent")
+                alert("收到!!\n我們將會盡快回覆")
+                location.replace('/')
             },
             403: function(data) {//403 is when something went wrong and the submission didn't go through
                 //error
-                alert('Oh no! something went wrong. we should check our code to make sure everything matches with Google');
+                alert("喔不!!\n好像爛掉了\n如果方便的話，可以傳email給我ㄇ，謝謝\n信箱在旁邊");
+                location.replace('/')
             }
         }
     });
