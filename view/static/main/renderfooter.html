@@ -21,24 +21,27 @@
 <!-- Footer -->
 <footer id="footer">
     <section>
-        <form method="post" action="/email">
+        <!--A form that send text to google forms-->
+        <form id="google-form">
             <div class="fields">
-                <p>Function Not Available yet</p>
                 <div class="field">
-                    <label for="name">Name</label>
-                    <input type="text" name="name" id="name"/>
+                    <label>Nickname 暱稱
+                    <input type="text" name="entry.743565742" required/>
+                    </label>
                 </div>
                 <div class="field">
-                    <label for="email">Email</label>
-                    <input type="text" name="email" id="email"/>
+                    <label>電子郵件 Email (用於回覆訊息)
+                    <input type="text" name="entry.1429337285" required/>
+                    </label>
                 </div>
                 <div class="field">
-                    <label for="message">Message</label>
-                    <textarea name="message" id="message" rows="3"></textarea>
+                    <label>訊息 Message
+                    <textarea name="entry.859617697" rows="3" required></textarea>
+                    </label>
                 </div>
             </div>
             <ul class="actions">
-                <li><input type="submit" value="Send Message"/></li>
+                <li><input type="submit" value="送出" /></li>
             </ul>
         </form>
     </section>
@@ -87,5 +90,6 @@
 <script src="/static/main/assets/js/breakpoints.min.js"></script>
 <script src="/static/main/assets/js/util.js"></script>
 <script src="/static/main/assets/js/main.js"></script>
+<script src="/static/main/googleform.js" crossorigin="anonymous"></script>
 </body>
 </html>
