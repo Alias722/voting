@@ -39,10 +39,6 @@ app.get('/', (req, res) => {
     //console.log()
     //redirect to /main/1
     return res.redirect(301,'/main/1')
-    /*fs.readFile("static/main/index.html", (err, data) => {
-        if (err) throw err
-        return res.send(data.toString())
-    })*/
 })
 
 app.get('/main/:pageid',(req,res)=>{
