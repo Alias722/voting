@@ -117,6 +117,18 @@ app.get('/opening',cookieParser(cookieParserName),(req,res)=>{
 app.get('/policy',cookieParser(cookieParserName),(req,res)=>{
     if(systemconfig.policy){
         var body = fs.readFileSync("static/main/policy.html").toString()
+        body +="<header class=\"major\"><h1>正副會長</h1></header>"
+        for(var key in systemconfig.president){
+            body += "<h2>"+systemconfig.president[key]+"、"+systemconfig.vicepresident[key]+"</h2>"
+            body += "<h3>政見</h3><blockquote>"+systemconfig.studentpolicy[key]+"</blockquote>"
+        }
+        body += "<br />"
+        body +="<header class=\"major\"><h1>學生議員 (全校選區)</h1></header>"
+        for(var key in systemconfig.parliamentary){
+            body += "<h2>"+systemconfig.parliamentary[key]+"</h2>"
+            body += "<h3>政見</h3><blockquote>"+systemconfig.parliamentarypolicy[key]+"</blockquote>"
+        }
+        body += "</section></div>"
         body += fs.readFileSync('static/main/footer.html').toString()
         res.status(200).send(body)
     }else{
