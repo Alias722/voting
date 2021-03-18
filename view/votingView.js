@@ -67,8 +67,15 @@ app.get('/main/:pageid',(req,res)=>{
                     data += tmp
                 }
             }
-            var footer = fs.readFileSync("static/main/footer.html").toString()
-            data += footer
+            pages = fs.readFileSync("static/main/pages.html").toString()
+            pageparams={a: pageid-3,b: pageid-2,c: pageid-1,d: pageid,e: pageid+1,f: pageid+2,g: pageid+3}
+            for(var key in pageparams){
+                var toReplace = "{%"+key+"%}"
+                var toBeReplace = new RegExp(toReplace,"g")
+                pages = pages.replace(toBeReplace,pageparams[key])
+            }
+            data += pages
+            data += fs.readFileSync("static/main/footer.html").toString()
             return res.send(data)
         })
     })
