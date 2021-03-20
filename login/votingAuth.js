@@ -214,7 +214,7 @@ app.all('/auth', urlencodedParser, (req, res) => {
                     } else {
                         //receive stu post request
                         const stuid = req.body.stuid
-                        temp = 'select * from student where id="' + stuid + '";'
+                        temp = 'select * from student where id="' + mysql.escape(stuid) + '";'
                         console.log(temp)
                         conn.query(temp, (error, result) => {
                             //console.log(result)
@@ -234,7 +234,7 @@ app.all('/auth', urlencodedParser, (req, res) => {
                                         //console.log(result)
                                         var user = result[0].email
                                         console.log(user)
-                                        sql = temp = 'update student set modified = ' + user + ',status = "1" where id = "' + stuid + '";'
+                                        sql = temp = 'update student set modified = ' + user + ',status = "1" where id = "' + mysql.escape(stuid) + '";'
                                         console.log(sql)
                                         conn.query(sql)
                                     })
@@ -323,7 +323,14 @@ app.all('/newpost', urlencodedParser, (req, res) => {
             conn.query(sqlpermission, (err, permission) => {
                 if (permission[0].configpost) {
                     if (req.body.add) {
-                        temp = "insert into post (title,context,time,subtitle) values ('"+req.body.title+"','"+req.body.context+"','"+req.body.time+"','"+req.body.subtitle+"');"
+                        reqcontext = req.body.context
+                        var toReplace = "\r\n"
+                        var toBeReplace = new RegExp(toReplace,"g")
+                        reqcontext = reqcontext.replace(toBeReplace, "<br>");
+                        var toReplace = "\n"
+                        var toBeReplace = new RegExp(toReplace,"g")
+                        reqcontext = reqcontext.replace(toBeReplace, "<br>");
+                        temp = "insert into post (title,context,time,subtitle) values ('"+req.body.title+"','"+reqcontext+"','"+req.body.time+"','"+req.body.subtitle+"');"
                         console.log(temp)
                         conn.query(temp)
                         return res.redirect(302,'post')
@@ -352,15 +359,6 @@ app.all('/newpost', urlencodedParser, (req, res) => {
                             data = data.replace('{%' + key + '%}', params[key]);
                         }
                         return res.send(data)
-                        /*fs.readFile("static/handwrite/addpost/index.html", (err, data) => {
-                            if (err) throw err
-                            systemtimenow = "timenow"
-                            params={timenow: systemtimenow}
-                            for (var key in params) {
-                                data = data.replace('{%' + key + '%}', params[key]);
-                            }
-                            return res.send(data.toString())
-                        })*/
                     }
                 }else{
                     //permission denied
@@ -387,7 +385,15 @@ app.all('/config', urlencodedParser, (req, res) => {
                     console.log(req.body.modify)
                     if(req.body.modify){
                         //recieve modify command
-                        temp = "update post set time='"+req.body.time+"',context='"+req.body.context+"',title='"+req.body.title+"',subtitle='"+req.body.subtitle+"' where id="+req.body.id+";"
+                        reqcontext = req.body.context
+                        var toReplace = "\r\n"
+                        var toBeReplace = new RegExp(toReplace,"g")
+                        reqcontext = reqcontext.replace(toBeReplace, "<br>");
+                        var toReplace = "\n"
+                        var toBeReplace = new RegExp(toReplace,"g")
+                        reqcontext = reqcontext.replace(toBeReplace, "<br>");
+
+                        temp = "update post set time='"+req.body.time+"',context='"+reqcontext+"',title='"+req.body.title+"',subtitle='"+req.body.subtitle+"' where id="+mysql.escape(req.body.id)+";"
                         console.log(temp)
                         conn.query(temp)
                         res.redirect(302,"/post")
@@ -428,13 +434,13 @@ app.all('/config/:postid', (req, res) => {
                 if (permission[0].configpost) {
                     var modify = req.query.modify
                     if (modify) {
-                        //haha
-                        // it is impossible to get here
-                        // If it does, it means someone is playing with it
+                        res.cookie('info', "請依循正確管道登入", {maxAge: 1000, signed: true, httpOnly: true, overwrite: true});
+                        res.cookie('location', "/", {maxAge: 1000, signed: true, httpOnly: true, overwrite: true});
+                        res.redirect(302,"/redirect")
                     } else {
                         //no modify command
                         //return modify page
-                        temp = "select * from post where id=" + req.params.postid + ";"
+                        temp = "select * from post where id=" + mysql.escape(req.params.postid) + ";"
                         console.log(temp)
                         conn.query(temp, (err, results) => {
                             console.log(results)
