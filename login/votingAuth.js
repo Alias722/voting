@@ -470,10 +470,6 @@ app.all('/config/:postid', (req, res) => {
 app.get('/redirect',(req,res)=>{
     location = req.signedCookies.location
     info = req.signedCookies.info
-    if(location == "undefined" || info =="undefined"){
-        location = "/"
-        info = "重新導向至登入頁面"
-    }
     params = {location: location,info: info}
     var data = fs.readFileSync("static/redirect.html").toString()
     for(var key in params){
