@@ -2,24 +2,17 @@
 <html lang="en">
 <head>
 	<title>管理員登入</title>
+	<link rel="icon" href="/static/voting.png">
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-<!--===============================================================================================-->	
 	<link rel="icon" type="image/png" href="/static/loginimages/icons/favicon.ico"/>
-<!--===============================================================================================-->
 	<link rel="stylesheet" type="text/css" href="/static/login/vendor/bootstrap/css/bootstrap.min.css">
-<!--===============================================================================================-->
 	<link rel="stylesheet" type="text/css" href="/static/login/fonts/font-awesome-4.7.0/css/font-awesome.min.css">
-<!--===============================================================================================-->
 	<link rel="stylesheet" type="text/css" href="/static/login/vendor/animate/animate.css">
-<!--===============================================================================================-->	
 	<link rel="stylesheet" type="text/css" href="/static/login/vendor/css-hamburgers/hamburgers.min.css">
-<!--===============================================================================================-->
 	<link rel="stylesheet" type="text/css" href="/static/login/vendor/select2/select2.min.css">
-<!--===============================================================================================-->
 	<link rel="stylesheet" type="text/css" href="/static/login/css/util.css">
 	<link rel="stylesheet" type="text/css" href="/static/login/css/main.css">
-<!--===============================================================================================-->
 </head>
 <body>
 	
@@ -46,7 +39,7 @@
 			<i class="fa fa-lock" aria-hidden="true"></i>
 			</span>
 		</div>
-		<input type="text" name="auth" value="true" id="Iwanttohide">
+		<input type="hidden" name="auth" value="true">
 		<div class="container-login100-form-btn">
 			<button class="login100-form-btn">
 			Login
