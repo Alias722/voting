@@ -106,9 +106,13 @@ app.all('/adduser', urlencodedParser, (req, res) => {
             var sql = 'insert into logininfo (email,username,password) values ("' + mysql.escape(email) + '","' + mysql.escape(username) + '","' + mysql.escape(passwd) + '");'
             //console.log(sql)
             conn.query(sql)
-            return res.send("<script>alert('account created redirecting to login page');location.replace('/login')</script>")
+            res.cookie('info', "建立使用者成功，請登入", {maxAge: 1000, signed: true, httpOnly: true, overwrite: true});
+            res.cookie('location', "/", {maxAge: 1000, signed: true, httpOnly: true, overwrite: true});
+            res.redirect(302,"/redirect")
         } else {
-            return res.send("<script>alert('function not enabled');location.replace('/login')</script>")
+            res.cookie('info', "新增使用者功能未啟用", {maxAge: 1000, signed: true, httpOnly: true, overwrite: true});
+            res.cookie('location', "/", {maxAge: 1000, signed: true, httpOnly: true, overwrite: true});
+            res.redirect(302,"/redirect")
         }
     } else {
         //print add user page
@@ -138,7 +142,6 @@ app.all('/login', urlencodedParser, (req, res) => {
             })
         } else {
             //receive post login request
-            console.log("entering login page")
             var email = req.body.email
             var passwd = req.body.pass
             temp = 'select * from logininfo where email="' + mysql.escape(email) + '";'
@@ -147,8 +150,9 @@ app.all('/login', urlencodedParser, (req, res) => {
                 //console.log(result)
                 if (!result.length) {
                     //username not queried
-                    console.log("username not match")
-                    return res.send('<script>alert("INVALID username or password");location.replace("/login")</script>')
+                    res.cookie('info', "使用者名稱或密碼錯誤", {maxAge: 1000, signed: true, httpOnly: true, overwrite: true});
+                    res.cookie('location', "/", {maxAge: 1000, signed: true, httpOnly: true, overwrite: true});
+                    res.redirect(302,"/redirect")
                 } else {
                     //account exist , verify the password
                     var sqlpassword = result[0].password
@@ -164,11 +168,13 @@ app.all('/login', urlencodedParser, (req, res) => {
                         conn.query(sqlquery)
                         res.cookie('id', sessionid, {signed: true, httpOnly: true, overwrite: true})
 
-                        //reload page
+                        //login success and reload page
                         return res.redirect(302, "/login")
                     } else {
                         //password is not match with mysql database
-                        return res.redirect(302, "/login")
+                        res.cookie('info', "使用者名稱或密碼錯誤", {maxAge: 1000, signed: true, httpOnly: true, overwrite: true});
+                        res.cookie('location', "/", {maxAge: 1000, signed: true, httpOnly: true, overwrite: true});
+                        res.redirect(302,"/redirect")
                     }
                 }
             })
@@ -179,7 +185,6 @@ app.all('/login', urlencodedParser, (req, res) => {
             if (err) throw err
             return res.send(data.toString())
         })
-        //res.send("Function Page")
     }
 })
 
@@ -187,7 +192,9 @@ app.all('/auth', urlencodedParser, (req, res) => {
     const sessionid = req.signedCookies.id
     if (!sessionid) {
         //no session id
-        res.redirect(302, 'login')
+        res.cookie('info', "請依循正常管道登入", {maxAge: 1000, signed: true, httpOnly: true, overwrite: true});
+        res.cookie('location', "/", {maxAge: 1000, signed: true, httpOnly: true, overwrite: true});
+        res.redirect(302,"/redirect")
     } else {
         finduser = 'select * from session where id="'+mysql.escape(sessionid)+'";'
         conn.query(finduser, (err, session) => {
@@ -213,7 +220,7 @@ app.all('/auth', urlencodedParser, (req, res) => {
                             //console.log(result)
                             if (result.length === 0) {
                                 //not exist
-                                res.send("Please insert valid student id")
+                                res.send("請輸入正確學生證號："+stuid)
                             } else {
                                 //found student in database
                                 //get operator email
@@ -240,7 +247,9 @@ app.all('/auth', urlencodedParser, (req, res) => {
                     }
                 }else{
                     //permission deny
-                    res.status(200).send("permission deny")
+                    res.cookie('info', "使用者權限不足", {maxAge: 1000, signed: true, httpOnly: true, overwrite: true});
+                    res.cookie('location', "/", {maxAge: 1000, signed: true, httpOnly: true, overwrite: true});
+                    res.redirect(302,"/redirect")
                 }
             })
         })
@@ -253,8 +262,9 @@ app.get('/post', (req, res) => {
     const sessionid = req.signedCookies.id
     if (!sessionid) {
         //no session id
-        console.log("no session id")
-        res.redirect(302, '/login')
+        res.cookie('info', "請依循正常管道登入", {maxAge: 1000, signed: true, httpOnly: true, overwrite: true});
+        res.cookie('location', "/", {maxAge: 1000, signed: true, httpOnly: true, overwrite: true});
+        res.redirect(302,"/redirect")
     } else {
         //showing page
         finduser = 'select * from session where id="'+mysql.escape(sessionid)+'";'
@@ -289,7 +299,9 @@ app.get('/post', (req, res) => {
                     })
                 }else{
                     //permission deny
-                    res.status(200).send("permission deny")
+                    res.cookie('info', "使用者權限不足", {maxAge: 1000, signed: true, httpOnly: true, overwrite: true});
+                    res.cookie('location', "/", {maxAge: 1000, signed: true, httpOnly: true, overwrite: true});
+                    res.redirect(302,"/redirect")
                 }
             })
         })
@@ -300,7 +312,9 @@ app.get('/post', (req, res) => {
 app.all('/newpost', urlencodedParser, (req, res) => {
     if (!sessionid) {
         //no session id
-        res.redirect(302, 'login')
+        res.cookie('info', "請依循正常管道登入", {maxAge: 1000, signed: true, httpOnly: true, overwrite: true});
+        res.cookie('location', "/", {maxAge: 1000, signed: true, httpOnly: true, overwrite: true});
+        res.redirect(302,"/redirect")
     } else {
         finduser = 'select * from session where id="'+mysql.escape(sessionid)+'";'
         conn.query(finduser, (err, session) => {
@@ -350,7 +364,9 @@ app.all('/newpost', urlencodedParser, (req, res) => {
                     }
                 }else{
                     //permission denied
-                    res.status(200).send("permission denied")
+                    res.cookie('info', "使用者權限不足", {maxAge: 1000, signed: true, httpOnly: true, overwrite: true});
+                    res.cookie('location', "/", {maxAge: 1000, signed: true, httpOnly: true, overwrite: true});
+                    res.redirect(302,"/redirect")
                 }
             })
         })
@@ -380,14 +396,18 @@ app.all('/config', urlencodedParser, (req, res) => {
                     }
                 } else {
                     //permission denied
-                    res.status(200).send("permission denied")
+                    res.cookie('info', "使用者權限不足", {maxAge: 1000, signed: true, httpOnly: true, overwrite: true});
+                    res.cookie('location', "/", {maxAge: 1000, signed: true, httpOnly: true, overwrite: true});
+                    res.redirect(302,"/redirect")
                 }
             })
         })
 
     }else{
         //no session id detected
-        res.status(200).send("not validate")
+        res.cookie('info', "請依循正當管道登入", {maxAge: 1000, signed: true, httpOnly: true, overwrite: true});
+        res.cookie('location', "/", {maxAge: 1000, signed: true, httpOnly: true, overwrite: true});
+        res.redirect(302,"/redirect")
     }
 })
 
@@ -396,8 +416,9 @@ app.all('/config/:postid', (req, res) => {
     console.log("Entering config page")
     if (!sessionid) {
         //no session id
-        console.log("redirect to login page owing to no valid sessionid")
-        res.redirect(302, 'login')
+        res.cookie('info', "請依循正當管道登入", {maxAge: 1000, signed: true, httpOnly: true, overwrite: true});
+        res.cookie('location', "/login", {maxAge: 1000, signed: true, httpOnly: true, overwrite: true});
+        res.redirect(302,"/redirect")
     } else {
         finduser = 'select * from session where id="'+mysql.escape(sessionid)+'";'
         conn.query(finduser, (err, session) => {
@@ -437,18 +458,24 @@ app.all('/config/:postid', (req, res) => {
                     }
                 } else {
                     //permission denied
-                    res.status(200).send("permission denied")
+                    res.cookie('info', "使用者權限不足", {maxAge: 1000, signed: true, httpOnly: true, overwrite: true});
+                    res.cookie('location', "/", {maxAge: 1000, signed: true, httpOnly: true, overwrite: true});
+                    res.redirect(302,"/redirect")
                 }
             })
         })
     }
 })
 
-app.get('/redirect',cookieParser(cookieParserName),(req,res)=>{
+app.get('/redirect',(req,res)=>{
     location = req.signedCookies.location
     info = req.signedCookies.info
+    if(location == "undefined" || info =="undefined"){
+        location = "/"
+        info = "重新導向至登入頁面"
+    }
     params = {location: location,info: info}
-    var data = fs.readFileSync("static/main/redirect.html").toString()
+    var data = fs.readFileSync("static/redirect.html").toString()
     for(var key in params){
         data = data.replace('{%'+key+'%}',params[key])
     }
