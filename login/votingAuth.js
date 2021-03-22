@@ -234,7 +234,7 @@ app.all('/auth', urlencodedParser, (req, res) => {
                                         //console.log(result)
                                         var user = result[0].email
                                         console.log(user)
-                                        sql = temp = 'update student set modified = ' + user + ',status = "1" where id = "' + mysql.escape(stuid) + '";'
+                                        sql = temp = 'update student set modified = ' + user + ',status = "1" where id = "' + stuid + '";'
                                         console.log(sql)
                                         conn.query(sql)
                                     })
