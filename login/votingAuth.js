@@ -214,7 +214,7 @@ app.all('/auth', urlencodedParser, (req, res) => {
                     } else {
                         //receive stu post request
                         const stuid = req.body.stuid
-                        temp = 'select * from student where id="' + mysql.escape(stuid) + '";'
+                        temp = 'select * from student where id="' + stuid + '";'
                         console.log(temp)
                         conn.query(temp, (error, result) => {
                             //console.log(result)
