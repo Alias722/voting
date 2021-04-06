@@ -169,7 +169,7 @@ app.get('/policy',cookieParser(cookieParserName),(req,res)=>{
 app.get('/motivation',cookieParser(cookieParserName),(req,res)=>{
     if(systemconfig.policy){
         var body = fs.readFileSync("static/main/motivation.html").toString()
-        body +="<header class=\"major\"><h1>正副會長候選人動機</h1></header>"
+        body +="<header class=\"major\"><h1>正副會長候選人參選動機</h1></header>"
         for(var key in systemconfig.president){
             var priority = parseInt(key) + 1
             body += "<h2>"+priority+"號候選團隊<br>"
@@ -179,7 +179,7 @@ app.get('/motivation',cookieParser(cookieParserName),(req,res)=>{
             body += "<blockquote>"+vpmo[key]+"</blockquote>"
             body += "<hr />"
         }
-        body +="<header class=\"major\"><h1>學生議員 (全校選區)動機</h1></header>"
+        body +="<header class=\"major\"><h1>學生議員 (全校選區)參選動機</h1></header>"
         for(var key in systemconfig.parliamentary){
             var priority = parseInt(key) + 1
             body += "<h2>"+priority+"號候選人<br>"+systemconfig.parliamentary[key]+"</h2>"
