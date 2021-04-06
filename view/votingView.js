@@ -13,6 +13,32 @@ const port = systemconfig.viewport // this node.js is working on this port using
 //every request will all pass here
 //app.use(cookieParser(cookieParserName),(req,res)
 
+//init
+const studentpolicy = systemconfig.studentpolicy;
+const pexp = systemconfig.pexp;
+const pmo = systemconfig.pmo;
+const vpexp = systemconfig.vpexp;
+const vpmo = systemconfig.vpmo;
+const parliamentarypolicy = systemconfig.parliamentarypolicy;
+const parliamentarymotivation = systemconfig.parliamentarymotivation;
+const parliamentaryexperience = systemconfig.parliamentaryexperience;
+
+for(var e in systemconfig.president){
+    var toBeReplace = new RegExp("\n","g")
+    studentpolicy[e] = studentpolicy[e].replace(toBeReplace, "<br>");
+    pmo[e] = pmo[e].replace(toBeReplace, "<br>");
+    vpmo[e] = vpmo[e].replace(toBeReplace, "<br>");
+    pexp[e] = pexp[e].replace(toBeReplace, "<br>");
+    vpexp[e] = vpexp[e].replace(toBeReplace, "<br>");
+}
+
+for(var e in systemconfig.parliamentary){
+    var toBeReplace = new RegExp("\n","g")
+    parliamentaryexperience[e] = parliamentaryexperience[e].replace(toBeReplace, "<br>");
+    parliamentarymotivation[e] = parliamentarymotivation[e].replace(toBeReplace, "<br>");
+    parliamentarypolicy[e] = parliamentarypolicy[e].replace(toBeReplace, "<br>");
+}
+
 const config = {
     //mysql configuration
     host: 'localhost',
@@ -117,16 +143,18 @@ app.get('/opening',cookieParser(cookieParserName),(req,res)=>{
 app.get('/policy',cookieParser(cookieParserName),(req,res)=>{
     if(systemconfig.policy){
         var body = fs.readFileSync("static/main/policy.html").toString()
-        body +="<header class=\"major\"><h1>正副會長</h1></header>"
+        body +="<header class=\"major\"><h1>正副會長候選人政見</h1></header>"
         for(var key in systemconfig.president){
-            body += "<h2>"+systemconfig.president[key]+"、"+systemconfig.vicepresident[key]+"</h2>"
-            body += "<h3>政見</h3><blockquote>"+systemconfig.studentpolicy[key]+"</blockquote>"
+            var priority = parseInt(key) + 1
+            body += "<h2>"+priority+"號候選團隊<br>"+systemconfig.president[key]+"、"+systemconfig.vp[key]+"</h2>"
+            body += "<blockquote>"+studentpolicy[key]+"</blockquote>"
         }
-        body += "<br />"
-        body +="<header class=\"major\"><h1>學生議員 (全校選區)</h1></header>"
+        body += "<hr />"
+        body +="<header class=\"major\"><h1>學生議員 (全校選區)政見</h1></header>"
         for(var key in systemconfig.parliamentary){
-            body += "<h2>"+systemconfig.parliamentary[key]+"</h2>"
-            body += "<h3>政見</h3><blockquote>"+systemconfig.parliamentarypolicy[key]+"</blockquote>"
+            var priority = parseInt(key) + 1
+            body += "<h2>"+priority+"號候選人<br>"+systemconfig.parliamentary[key]+"</h2>"
+            body += "<blockquote>"+systemconfig.parliamentarypolicy[key]+"</blockquote>"
         }
         body += "</section></div>"
         body += fs.readFileSync('static/main/footer.html').toString()
@@ -137,6 +165,65 @@ app.get('/policy',cookieParser(cookieParserName),(req,res)=>{
         res.redirect(302,"/redirect")
     }
 })
+
+app.get('/motivation',cookieParser(cookieParserName),(req,res)=>{
+    if(systemconfig.policy){
+        var body = fs.readFileSync("static/main/motivation.html").toString()
+        body +="<header class=\"major\"><h1>正副會長候選人動機</h1></header>"
+        for(var key in systemconfig.president){
+            var priority = parseInt(key) + 1
+            body += "<h2>"+priority+"號候選團隊<br>"
+            body += systemconfig.president[key]+"</h2>"
+            body += "<blockquote>"+pmo[key]+"</blockquote>"
+            body += "<h2>"+systemconfig.vp[key]+"</h2>"
+            body += "<blockquote>"+vpmo[key]+"</blockquote>"
+            body += "<hr />"
+        }
+        body +="<header class=\"major\"><h1>學生議員 (全校選區)動機</h1></header>"
+        for(var key in systemconfig.parliamentary){
+            var priority = parseInt(key) + 1
+            body += "<h2>"+priority+"號候選人<br>"+systemconfig.parliamentary[key]+"</h2>"
+            body += "<blockquote>"+parliamentarymotivation[key]+"</blockquote>"
+        }
+        body += "</section></div>"
+        body += fs.readFileSync('static/main/footer.html').toString()
+        res.status(200).send(body)
+    }else{
+        res.cookie('info', "候選人政見尚未確定", {maxAge: 1000, signed: true, httpOnly: true, overwrite: true});
+        res.cookie('location', "/", {maxAge: 1000, signed: true, httpOnly: true, overwrite: true});
+        res.redirect(302,"/redirect")
+    }
+})
+
+app.get('/experience',cookieParser(cookieParserName),(req,res)=>{
+    if(systemconfig.policy){
+        var body = fs.readFileSync("static/main/experience.html").toString()
+        body +="<header class=\"major\"><h1>正副會長候選人經歷</h1></header>"
+        for(var key in systemconfig.president){
+            var priority = parseInt(key) + 1
+            body += "<h2>"+priority+"號候選團隊<br>"
+            body += systemconfig.president[key]+"</h2>"
+            body += "<blockquote>"+pexp[key]+"</blockquote>"
+            body += "<h2>"+systemconfig.vp[key]+"</h2>"
+            body += "<blockquote>"+vpexp[key]+"</blockquote>"
+            body += "<hr />"
+        }
+        body +="<header class=\"major\"><h1>學生議員 (全校選區)經歷</h1></header>"
+        for(var key in systemconfig.parliamentary){
+            var priority = parseInt(key) + 1
+            body += "<h2>"+priority+"號候選人<br>"+systemconfig.parliamentary[key]+"</h2>"
+            body += "<blockquote>"+parliamentaryexperience[key]+"</blockquote>"
+        }
+        body += "</section></div>"
+        body += fs.readFileSync('static/main/footer.html').toString()
+        res.status(200).send(body)
+    }else{
+        res.cookie('info', "候選人政見尚未確定", {maxAge: 1000, signed: true, httpOnly: true, overwrite: true});
+        res.cookie('location', "/", {maxAge: 1000, signed: true, httpOnly: true, overwrite: true});
+        res.redirect(302,"/redirect")
+    }
+})
+
 
 app.get('/redirect',cookieParser(cookieParserName),(req,res)=>{
     location = req.signedCookies.location
