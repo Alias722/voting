@@ -1,7 +1,5 @@
 //arguments
-const register = false
 const cookieParserName = "HelloWorldhaha"
-
 //import files
 const cookieParser = require("cookie-parser")
 const crypto = require("crypto") //to have session secret code
@@ -14,10 +12,10 @@ const urlencodedParser = bodyParser.urlencoded({extended: false})//form parser
 const mysql = require("mysql")
 const systemconfig = require('../config.json')
 const port = systemconfig.loginport // this node.js is working on this port using nginx proxy to outside
-
+const register = systemconfig.register
 //every request will all pass here
 //app.use(cookieParser(cookieParserName),(req,res)
-var temp
+
 app.use(cookieParser(cookieParserName), (req, res, next) => {
     //print basic information
     console.log(Date())
