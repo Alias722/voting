@@ -211,7 +211,7 @@ app.all('/auth', urlencodedParser, (req, res) => {
                         })
                     } else {
                         //receive stu post request
-                        const stuid = req.body.stuid
+                        const stuid = parseInt(req.body.stuid)
                         temp = 'select * from student where id="' + stuid + '";'
                         console.log(temp)
                         conn.query(temp, (error, result) => {
@@ -366,8 +366,6 @@ app.all('/newpost', urlencodedParser, (req, res) => {
                 }
             })
         })
-
-
     }
 })
 
